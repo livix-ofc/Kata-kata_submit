@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Words - Kumpulan Kata dari Hati Manusia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --bg-warm: #faf9f7;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-warm);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+        
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Smooth fade in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        /* Quote card styling */
+        .quote-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 3px solid transparent;
+        }
+        
+        .quote-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+        
+        .quote-card.pinned {
+            border-left-color: var(--accent);
+            background: linear-gradient(to right, rgba(231, 76, 60, 0.03), transparent);
+        }
+        
+        /* Hidden admin mode indicator */
+        .admin-mode {
+            display: none;
+        }
+        
+        body.admin-active .admin-mode {
+            display: flex;
+        }
+        
+        body.admin-active .quote-card {
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        /* Secret button styling */
+        .secret-trigger {
+            cursor: default;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        
+        .secret-trigger:hover {
+            color: var(--text-muted);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Input styling */
+        .elegant-input {
+            border: none;
+            border-bottom: 2px solid #e0e0e0;
+            background: transparent;
+            transition: border-color 0.3s;
+        }
+        
+        .elegant-input:focus {
+            outline: none;
+            border-bottom-color: var(--primary);
+        }
+        
+        /* Admin badge */
+        .admin-badge {
+            display: none;
+            background: var(--accent);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        body.admin-active .admin-badge {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header -->
+    <header class="py-16 px-6 text-center bg-gradient-to-b from-white to-transparent">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="font-serif text-5xl md:text-6xl text-gray-800 mb-4 italic">
+                Human Words
+            </h1>
+            <p class="text-gray-500 text-lg font-light tracking-wide">
+                Kumpulan kata-kata tulus dari hati manusia, bukan mesin.
+            </p>
+            <div class="w-16 h-px bg-gray-300 mx-auto mt-8"></div>
+        </div>
+    </header>
+
+    <!-- Submit Form Section -->
+    <section class="max-w-2xl mx-auto px-6 mb-16">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-10">
+            <h2 class="font-serif text-2xl mb-6 text-gray-800">Bagikan Kata-Katamu</h2>
+            
+            <form id="quoteForm" class="space-y-6">
+                <div>
+                    <textarea 
+                        id="quoteText" 
+                        rows="4" 
+                        class="w-full elegant-input text-lg resize-none placeholder-gray-400"
+                        placeholder="Tulis kata-kata, kutipan, atau pemikiranmu di sini..."
+                        required
+                    ></textarea>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <input 
+                            type="text" 
+                            id="authorName" 
+                            class="w-full elegant-input py-2 placeholder-gray-400"
+                            placeholder="Nama atau inisial (opsional)"
+                        >
+                    </div>
+                    <div>
+                        <input 
+                            type="text" 
+                            id="authorLocation" 
+                            class="w-full elegant-input py-2 placeholder-gray-400"
+                            placeholder="Lokasi (opsional)"
+                        >
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-4">
+                    <span class="text-xs text-gray-400 italic">
+                        * Konten akan ditampilkan secara publik
+                    </span>
+                    <button 
+                        type="submit" 
+                        class="bg-gray-800 text-white px-8 py-3 rounded-full hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 text-sm tracking-wider uppercase"
+                    >
+                        Kirim
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Filter/Stats Bar -->
+    <section class="max-w-6xl mx-auto px-6 mb-8 flex justify-between items-center text-sm text-gray-500">
+        <div class="flex gap-4">
+            <button onclick="filterQuotes('all')" class="hover:text-gray-800 transition-colors filter-btn active" data-filter="all">
+                Semua
+            </button>
+            <button onclick="filterQuotes('pinned')" class="hover:text-gray-800 transition-colors filter-btn" data-filter="pinned">
+                Disematkan
+            </button>
+        </div>
+        <div id="totalQuotes" class="italic">Memuat...</div>
+    </section>
+
+    <!-- Quotes Grid -->
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        <div id="quotesContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Quotes will be inserted here -->
+        </div>
+        
+        <div id="emptyState" class="hidden text-center py-20 text-gray-400">
+            <p class="font-serif text-xl italic">Belum ada kata-kata yang tersimpan.</p>
+            <p class="mt-2 text-sm">Jadilah yang pertama berbagi.</p>
+        </div>
+    </section>
+
+    <!-- Footer with Hidden Admin Access -->
+    <footer class="border-t border-gray-200 bg-white mt-20">
+        <div class="max-w-6xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+                <div class="flex items-center gap-2">
+                    <span>© 2024 Human Words.</span>
+                    <span class="text-gray-300">•</span>
+                    <span>Kontribusi Manusia, Untuk Manusia.</span>
+                </div>
+                
+                <!-- Hidden Admin Trigger: Double click on copyright symbol -->
+                <div class="secret-trigger text-xs tracking-wider" 
+                     ondblclick="toggleAdminMode()"
+                     title="©"
+                     style="opacity: 0.6;">
+                    Made with intention.
+                </div>
+            </div>
+            
+            <!-- Admin Instructions (Hidden) -->
+            <div id="adminHint" class="hidden text-center mt-4 text-xs text-gray-300">
+                <p>Mode Admin: <span class="text-red-400">AKTIF</span> | Double-click teks di atas untuk menonaktifkan</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Modal for Delete Confirmation -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h3 class="font-serif text-xl mb-4">Konfirmasi Admin</h3>
+            <p id="modalText" class="text-gray-600 mb-6 text-sm"></p>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-500 hover:text-gray-700 text-sm">Batal</button>
+                <button id="confirmBtn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm transition-colors">
+                    Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Store (In-memory, will reset on page refresh)
+        // In production, this should be connected to a backend/database
+        let quotes = [
+            {
+                id: 1,
+                text: "Kadang diam adalah cara paling jujur untuk mengatakan bahwa kita peduli.",
+                author: "Anonim",
+                location: "Jakarta",
+                timestamp: new Date('2024-01-15').getTime(),
+                pinned: true
+            },
+            {
+                id: 2,
+                text: "Jangan takut jatuh, karena yang tidak pernah naik adalah tanah.",
+                author: "Rudi",
+                location: "Bandung",
+                timestamp: new Date('2024-01-16').getTime(),
+                pinned: false
+            },
+            {
+                id: 3,
+                text: "Waktu tidak menyembuhkan, tapi mengajarkan kita cara hidup dengan luka.",
+                author: "Sarah",
+                location: "Surabaya",
+                timestamp: new Date('2024-01-17').getTime(),
+                pinned: false
+            }
+        ];
+
+        let isAdminMode = false;
+        let currentFilter = 'all';
+        let deleteCallback = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuotes();
+            updateStats();
+        });
+
+        // Form Submission
+        document.getElementById('quoteForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const text = document.getElementById('quoteText').value.trim();
+            const author = document.getElementById('authorName').value.trim() || 'Anonim';
+            const location = document.getElementById('authorLocation').value.trim();
+            
+            if (!text) return;
+            
+            const newQuote = {
+                id: Date.now(),
+                text: text,
+                author: author,
+                location: location,
+                timestamp: Date.now(),
+                pinned: false
+            };
+            
+            quotes.unshift(newQuote); // Add to beginning
+            
+            // Reset form
+            document.getElementById('quoteForm').reset();
+            
+            // Re-render
+            renderQuotes();
+            updateStats();
+            
+            // Show success feedback
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Terkirim!';
+            btn.classList.add('bg-green-600');
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('bg-green-600');
+            }, 2000);
+        });
+
+        // Render Quotes
+        function renderQuotes() {
+            const container = document.getElementById('quotesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            let displayQuotes = quotes;
+            
+            // Apply filter
+            if (currentFilter === 'pinned') {
+                displayQuotes = quotes.filter(q => q.pinned);
+            }
+            
+            // Sort: Pinned first, then newest
+            displayQuotes.sort((a, b) => {
+                if (a.pinned === b.pinned) {
+                    return b.timestamp - a.timestamp;
+                }
+                return a.pinned ? -1 : 1;
+            });
+            
+            if (displayQuotes.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            container.innerHTML = displayQuotes.map(quote => `
+                <article class="quote-card ${quote.pinned ? 'pinned' : ''} bg-white rounded-xl p-6 shadow-sm border border-gray-100 relative group animate-fade-in" data-id="${quote.id}">
+                    ${quote.pinned ? `
+                        <div class="absolute top-4 right-4 text-red-400">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+                            </svg>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="mb-4">
+                        <svg class="w-8 h-8 text-gray-200 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                        <p class="font-serif text-lg text-gray-800 leading-relaxed italic">
+                            ${escapeHtml(quote.text)}
+                        </p>
+                    </div>
+                    
+                    <div class="flex justify-between items-end pt-4 border-t border-gray-50">
+                        <div>
+                            <p class="font-medium text-sm text-gray-700">${escapeHtml(quote.author)}</p>
+                            ${quote.location ? `<p class="text-xs text-gray-400 mt-0.5">${escapeHtml(quote.location)}</p>` : ''}
+                        </div>
+                        <time class="text-xs text-gray-400" datetime="${new Date(quote.timestamp).toISOString()}">
+                            ${formatDate(quote.timestamp)}
+                        </time>
+                    </div>
+                    
+                    <!-- Admin Controls (Hidden by default) -->
+                    <div class="admin-mode absolute top-4 right-4 gap-2 ${quote.pinned ? 'left-4 justify-between w-full pr-8' : ''}">
+                        ${quote.pinned ? '<span class="admin-badge">Pinned</span>' : ''}
+                        <div class="flex gap-2">
+                            <button onclick="togglePin(${quote.id})" 
+                                    class="p-1.5 rounded-full ${quote.pinned ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-100 text-gray-600'} hover:scale-110 transition-transform"
+                                    title="${quote.pinned ? 'Lepas sematan' : 'Sematkan'}">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDelete(${quote.id})" 
+                                    class="p-1.5 rounded-full bg-red-50 text-red-500 hover:scale-110 transition-transform"
+                                    title="Hapus">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Admin Mode Toggle (Secret: Double click footer text)
+        function toggleAdminMode() {
+            isAdminMode = !isAdminMode;
+            document.body.classList.toggle('admin-active');
+            
+            const hint = document.getElementById('adminHint');
+            if (isAdminMode) {
+                hint.classList.remove('hidden');
+                console.log('%c Mode Admin Aktif ', 'background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px;');
+            } else {
+                hint.classList.add('hidden');
+                console.log('%c Mode Admin Nonaktif ', 'background: #95a5a6; color: white; padding: 4px 8px; border-radius: 4px;');
+            }
+            
+            renderQuotes();
+        }
+
+        // Toggle Pin
+        function togglePin(id) {
+            if (!isAdminMode) return;
+            
+            const quote = quotes.find(q => q.id === id);
+            if (quote) {
+                quote.pinned = !quote.pinned;
+                renderQuotes();
+            }
+        }
+
+        // Confirm Delete
+        function confirmDelete(id) {
+            if (!isAdminMode) return;
+            
+            const quote = quotes.find(q => q.id === id);
+            if (!quote) return;
+            
+            const modal = document.getElementById('adminModal');
+            const modalText = document.getElementById('modalText');
+            const confirmBtn = document.getElementById('confirmBtn');
+            
+            modalText.textContent = `Hapus kutipan dari "${quote.author}"? Tindakan ini tidak dapat dibatalkan.`;
+            modal.classList.remove('hidden');
+            
+            deleteCallback = () => {
+                quotes = quotes.filter(q => q.id !== id);
+                renderQuotes();
+                updateStats();
+                closeModal();
+            };
+            
+            confirmBtn.onclick = deleteCallback;
+        }
+
+        function closeModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+            deleteCallback = null;
+        }
+
+        // Filter Function
+        function filterQuotes(type) {
+            currentFilter = type;
+            
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === type) {
+                    btn.classList.add('text-gray-800', 'font-medium');
+                    btn.classList.remove('text-gray-500');
+                } else {
+                    btn.classList.remove('text-gray-800', 'font-medium');
+                    btn.classList.add('text-gray-500');
+                }
+            });
+            
+            renderQuotes();
+        }
+
+        // Update Stats
+        function updateStats() {
+            const total = quotes.length;
+            const pinned = quotes.filter(q => q.pinned).length;
+            document.getElementById('totalQuotes').textContent = 
+                `${total} kata-kata${pinned > 0 ? ` • ${pinned} disematkan` : ''}`;
+        }
+
+        // Utility: Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Utility: Format Date
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            // Less than 24 hours
+            if (diff < 86400000) {
+                if (diff < 3600000) {
+                    const mins = Math.floor(diff / 60000);
+                    return mins < 1 ? 'Baru saja' : `${mins}m lalu`;
+                }
+                return `${Math.floor(diff / 3600000)}j lalu`;
+            }
+            
+            // Less than 7 days
+            if (diff < 604800000) {
+                return `${Math.floor(diff / 86400000)}h lalu`;
+            }
+            
+            return date.toLocaleDateString('id-ID', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: diff > 31536000000 ? 'numeric' : undefined 
+            });
+        }
+
+        // Close modal on outside click
+        document.getElementById('adminModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        // Keyboard shortcut for admin (backup access): Ctrl + Shift + A
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                toggleAdminMode();
+            }
+        });
+    </script>
+</body>
+</html>
